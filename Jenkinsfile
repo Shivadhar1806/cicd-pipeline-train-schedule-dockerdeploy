@@ -1,12 +1,22 @@
+agentName = "server-slave"
+
 pipeline {
-    agent any
-    stages {
-        stage('Build') {
+  agent none
+  stages {
+     stage('Prep') {
             steps {
-                echo 'Running build automation'
-                sh './gradlew build --no-daemon'
-                archiveArtifacts artifacts: 'dist/trainSchedule.zip'
+                script {
+                    agentName = "server-slave"
+                }
             }
         }
+     stage ('Build') {
+        agent { label agentName }
+        steps {
+          echo 'Running build stage'
+          sh './gradlew build --no-daemon'
+          archiveArtifacts artifacts: 'dist/trainSchedule.zip'
+       }
     }
+  }
 }
